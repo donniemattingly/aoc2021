@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="remix" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/remix/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/remix/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/remix/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/remix/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/remix/lib" />
+      <root url="file://$PROJECT_DIR$/deps/remix/lib" />
+    </SOURCES>
+  </library>
+</component>

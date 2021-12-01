@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="memoize" type="mix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/memoize/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/memoize/ebin" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/memoize/lib" />
+      <root url="file://$PROJECT_DIR$/deps/memoize/lib" />
+    </SOURCES>
+  </library>
+</component>
