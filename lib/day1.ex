@@ -57,8 +57,12 @@ defmodule Day1 do
 
   def solve1(input), do: solve(input)
 
-  def parse_and_solve1(input), do: parse_input1(input) |> solve1
-  def parse_and_solve2(input), do: parse_input2(input) |> solve2
+  def parse_and_solve1(input),
+      do: parse_input1(input)
+          |> solve1
+  def parse_and_solve2(input),
+      do: parse_input2(input)
+          |> solve2
 
   def parse_input(input) do
     input
@@ -67,26 +71,17 @@ defmodule Day1 do
   end
 
   def solve(input) do
-    depths = Enum.drop(input, 1)
-    prev_depths = Enum.drop(input, -1)
-
-    Enum.zip(depths, prev_depths)
-    |> Enum.map(fn {depth, prev} -> depth > prev end)
-    |> Enum.count(&(&1))
+    input
+    |> Enum.chunk_every(2, 1)
+    |> Enum.filter(&match?([a, b], &1))
+    |> Enum.count(fn [a, b] -> b > a end)
   end
 
   def solve2(input) do
-    depths = Enum.drop(input, 1)
-    prev_depths = Enum.drop(input, -1)
-
-    first = Enum.drop(depths, -1)
-    middle = Enum.drop(depths, 1)
-    last = Enum.drop(prev_depths, -1)
-
-    first
-    |> Enum.zip(middle)
-    |> Enum.zip(last)
-    |> Enum.map(fn {{a, b}, c} -> a + b + c end)
-    |> solve1
+    input
+    |> Enum.chunk_every(3, 1)
+    |> Enum.drop(-1)
+    |> Enum.map(&Enum.sum/1)
+    |> solve
   end
 end
