@@ -65,7 +65,7 @@ defmodule Utils.DayBoilerplate do
       end
 
 
-      defoverridable solve: 1, solve2: 1, parse_input: 1, sample_input: 0
+      defoverridable solve: 1, solve1: 1, solve2: 1, parse_input: 1, sample_input: 0
     end
   end
 end

@@ -1,5 +1,6 @@
 defmodule Day6 do
   use Utils.DayBoilerplate, day: 6
+  use Memoize
 
   def sample_input do
     """
@@ -26,8 +27,17 @@ defmodule Day6 do
     {sub, Submarine.count_fish(sub)}
   end
 
-  def solve(input) do
-    run_for_days(input, 80)
+  def solve1(input), do: solve(input, 80)
+  def solve2(input), do: solve(input, 256)
+  def solve(input, days) do
+    input
+    |> Enum.map(&fish_after_days(days - &1))
+    |> Enum.sum
+  end
+
+  defmemo fish_after_days(days) when days <= 0, do: 1 # these are fish who do not finish a full end cycle
+  defmemo fish_after_days(days) do
+    fish_after_days(days - 9) + fish_after_days(days - 7)
   end
 end
 
