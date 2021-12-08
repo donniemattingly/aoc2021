@@ -11,8 +11,7 @@ defmodule Utils.DayBoilerplate do
       end
 
       def sample_input2 do
-        """
-        """
+        sample_input
       end
 
       def sample do
