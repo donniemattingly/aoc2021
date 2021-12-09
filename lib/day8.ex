@@ -50,47 +50,16 @@ defmodule Day8 do
   """
 
   def segments_for_number do
-    %{
-      0 => "abcefg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      1 => "cf"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      2 => "acdeg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      3 => "acdfg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      4 => "bcdf"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      5 => "abdfg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      6 => "abdefg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      7 => "acf"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      8 => "abcdefg"
-           |> Utils.split_each_char
-           |> MapSet.new,
-      9 => "abcdfg"
-           |> Utils.split_each_char
-           |> MapSet.new
-    }
+    ["abcefg", "cf", "acdeg", "acdfg", "bcdf", "abdfg", "abdefg", "acf", "abcdefg", "abcdfg"]
+    |> Enum.map(&Utils.split_each_char/1)
+    |> Enum.map(&MapSet.new/1)
+    |> Stream.with_index()
+    |> Stream.map(fn {set, index} -> {index, set} end)
+    |> Map.new
   end
 
   def known_segments_by_length do
-    %{
-      2 => 1,
-      4 => 4,
-      3 => 7,
-      7 => 8
-    }
+    %{2 => 1, 4 => 4, 3 => 7, 7 => 8}
   end
 
   def numbers_with_segment do
@@ -129,18 +98,6 @@ defmodule Day8 do
            |> MapSet.to_list
            |> hd
 
-    {
-      sorted_str(
-        zero
-        |> Enum.join
-      ),
-      sorted_str(
-        nine
-        |> Enum.join
-      )
-    }
-    |> IO.inspect
-
     five_segs = by_chars
                 |> Enum.filter(fn it -> Enum.count(it) == 5 end)
 
@@ -155,28 +112,11 @@ defmodule Day8 do
           |> MapSet.to_list
           |> hd
 
-    %{
-      "1" => one
-             |> Enum.join,
-      "2" => two
-             |> Enum.join,
-      "3" => three
-             |> Enum.join,
-      "4" => four
-             |> Enum.join,
-      "5" => five
-             |> Enum.join,
-      "6" => six
-             |> Enum.join,
-      "7" => seven
-             |> Enum.join,
-      "8" => eight
-             |> Enum.join,
-      "9" => nine
-             |> Enum.join,
-      "0" => zero
-             |> Enum.join,
-    }
+    [zero, one, two, three, four, five, six, seven, eight, nine]
+    |> Enum.map(&Enum.join/1)
+    |> Stream.with_index()
+    |> Stream.map(fn {set, index} -> {"#{index}", set} end)
+    |> Map.new
   end
 
   def impossible_segments(number) do
@@ -216,8 +156,6 @@ defmodule Day8 do
                |> IO.inspect
                |> Map.new
 
-    IO.inspect(mappings)
-
     display
     |> Enum.map(&sorted_str/1)
     |> Enum.map(fn char -> Map.get(mappings, char) end)
@@ -229,9 +167,5 @@ defmodule Day8 do
     |> Enum.map(&solve_line/1)
     |> Enum.map(&String.to_integer/1)
     |> Enum.sum
-
-#    input
-#    |> hd
-#    |> solve_line
   end
 end
