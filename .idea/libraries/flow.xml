@@ -3,9 +3,19 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/flow/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/flow/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/flow/lib" />
+      <root url="file://$PROJECT_DIR$/deps/flow/lib" />
       <root url="file://$PROJECT_DIR$/deps/flow/lib" />
       <root url="file://$PROJECT_DIR$/deps/flow/lib" />
     </SOURCES>

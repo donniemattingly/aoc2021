@@ -33,6 +33,18 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/makeup_elixir" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/earmark" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/flow" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/qex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/comb" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/flow" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/toml" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/matrex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/combine" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/memoize" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/rustler" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/libgraph" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/gen_stage" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/color_utils" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/elixir_make" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="earmark" level="project" />
