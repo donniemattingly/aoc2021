@@ -70,6 +70,12 @@ defmodule Utils do
     |> Enum.filter(fn line -> !Enum.member?(["", "\n"], line) end)
   end
 
+  def split_and_parse_each_char(input, parser_fn) do
+    input
+    |> split_each_char()
+    |> Enum.map(fn x -> parser_fn.(x) end)
+  end
+
   def clamp(number, minimum, maximum) do
     number
     |> max(minimum)
