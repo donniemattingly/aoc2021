@@ -46,6 +46,7 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/color_utils" />
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/elixir_make" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/nx" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/statistics" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="earmark" level="project" />
