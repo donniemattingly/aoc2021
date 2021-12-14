@@ -25,6 +25,7 @@ defmodule Aoc2021.MixProject do
       {:ex_doc, "~> 0.19", only: :dev},
       {:matrex, "~> 0.6"},
       {:libgraph, "~> 0.13"},
+      {:statistics, "~> 0.6"},
       {:flow, "~> 0.14"},
       {:qex, "~> 0.5"},
       {:memoize, "~> 1.2"},
