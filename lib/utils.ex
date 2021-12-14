@@ -161,7 +161,7 @@ defmodule Utils do
   def permutations([]), do: [[]]
 
   def permutations(list),
-    do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
+      do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
 
   def log_inspect(value, description, opts \\ []) when @log do
     IO.puts(description <> ": ")
@@ -174,7 +174,7 @@ defmodule Utils do
 
   def combinations([head | tail], num) do
     Enum.map(combinations(tail, num - 1), &[head | &1]) ++
-      combinations(tail, num)
+    combinations(tail, num)
   end
 
   def log_inspect(value), do: value
@@ -261,8 +261,8 @@ defmodule Utils do
     import IO.ANSI
 
     digit <>
-      (digit
-       |> color_for_digit)
+    (digit
+     |> color_for_digit)
   end
 
   def colorize(str, color) do
@@ -291,6 +291,22 @@ defmodule Utils do
     |> Stream.with_index()
     |> Stream.flat_map(&row_to_point_value_pair/1)
     |> Enum.into(%{})
+  end
+
+  def print_map_of_points(map, getter \\ fn map, point -> Map.get(map, point, " ") end) do
+    {{x1, y1}, {x2, y2}} = map
+                           |> Map.keys
+                           |> Enum.min_max()
+    y1..y2
+    |> Enum.map(
+         fn y ->
+           x1..x2
+           |> Enum.map(getter)
+           |> Enum.join("")
+         end
+       )
+    |> Enum.join("\n")
+    |> IO.puts
   end
 
   def row_to_point_value_pair({row, row_number}) do
