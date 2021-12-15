@@ -86,10 +86,37 @@ defmodule Day14 do
     |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, & &1 + 1) end)
   end
 
+  def iter(pairs, pair_rules) do
+    pairs
+    |> Map.to_list
+    |> Enum.flat_map(
+         fn
+           {pair, count} ->
+             Map.get(pair_rules, pair, [pair])
+             |> Enum.map(&{&1, count})
+         end
+       )
+    |> Enum.reduce(%{}, fn {p, c}, acc -> Map.update(acc, p, c, & &1 + c) end)
+  end
+
+  def to_pair_rules(rules) do
+    rules
+    |> Map.to_list
+    |> Enum.map(fn {[k1, k2], [v]} -> {[k1, k2], [[k1, v], [v, k2]]} end)
+    |> Map.new
+  end
+
+  def template_to_initial_pairs(template) do
+    template
+    |> String.to_charlist
+    |> Enum.chunk_every(2, 1)
+    |> Enum.filter(&Enum.count(&1) == 2)
+    |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, & &1 + 1) end)
+  end
+
   def solve({template, rules}) do
-    IO.inspect(rules)
     ltemplate = String.to_charlist(template)
-    {{a, na}, {b, nb}} = 1..40
+    {{a, na}, {b, nb}} = 1..10
                          |> Enum.reduce(
                               ltemplate,
                               fn x, acc ->
@@ -103,5 +130,29 @@ defmodule Day14 do
                          |> Enum.min_max_by(fn {_, x} -> x end)
 
     nb - na
+  end
+
+  def solve2({template, rules}) do
+    initial_counts = template_to_initial_pairs(template)
+    pair_rules = to_pair_rules(rules)
+
+    result = 1..40
+             |> Enum.reduce(
+                  {initial_counts, []},
+                  fn i, {acc, agg} ->
+                    if rem(i, 10_000) == 0 do
+                      IO.puts(i)
+                    end
+                    res = iter(acc, pair_rules)
+                    {res, [res | agg]}
+                  end
+                )
+             |> IO.inspect
+    #             |> Enum.flat_map(fn {[a, b], count} -> [{[a], count}, {[b], count}] end)
+    #             |> Enum.reduce(%{}, fn {char, count}, acc -> Map.update(acc, char, count, & &1 + count) end)
+    #             |> Map.to_list
+    #             |> hd
+    #             |> elem(1)
+    #             |> IO.inspect
   end
 end
