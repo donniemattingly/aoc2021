@@ -101,5 +101,11 @@ defmodule Day15 do
     Map.has_key?(map, {ix, iy}) and (tx < 5 and ty < 5)
   end
 
-  def weight_for_point(map, from, point), do: Map.get(map, point)
+  def get_weight(map, point) do
+    {{tx, ix}, {ty, iy}} = get_tiled_point(map, point)
+    original = Map.get(map, {ix, iy})
+    original + tx + ix
+  end
+
+  def weight_for_point(map, from, point), do: get_weight(map, point)
 end
