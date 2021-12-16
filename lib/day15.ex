@@ -28,61 +28,61 @@ defmodule Day15 do
     |> Utils.list_of_lists_to_map_by_point()
   end
 
-  def solve4(input) do
-    goal = input
-           |> Map.to_list
-           |> Enum.map(&elem(&1, 0))
-           |> Enum.max
-    paths = Utils.Graph.dijkstra({0, 0}, &neighbor_for_point(input, &1), &weight_for_point(input, &1, &2))
-
-    [start | rest] = Utils.Graph.get_path(paths, goal)
-
-    paths
-    |> IO.inspect
-    rest
-    |> Enum.map(&Map.get(input, &1))
-    |> IO.inspect
-    |> Enum.sum()
-  end
-
   def solve(input) do
     g = make_graph(input)
-    goal = Map.keys(input)
+        |> IO.inspect
+    goal = Graph.vertices(g)
            |> Enum.max
+           |> IO.inspect
+
     path = Graph.dijkstra(g, {0, 0}, goal)
 
     cost = path
-           |> Enum.map(&Map.get(input, &1))
+           |> Enum.map(&weight_for_point(input, &1))
+           |> IO.inspect
            |> Enum.sum
 
     cost - Map.get(input, {0, 0})
   end
 
   def make_graph(input) do
+    chunk_size = input
+                 |> Map.keys
+                 |> Enum.max
+                 |> elem(0)
+                 |> Kernel.+(1)
+                 |> IO.inspect
     edges = input
             |> Map.keys()
-            |> Enum.flat_map(
+            |> Stream.flat_map(
+                 fn {x, y} -> for dx <- 0..4, dy <- 0..4, do: {x + dx * chunk_size, y + dy * chunk_size} end
+               )
+            |> Stream.flat_map(
                  fn p ->
-                   Day15.neighbor_for_point(input, p)
+                   Day15.neighbor_for_point(input, p, chunk_size)
                    |> Enum.map(&{p, &1})
                  end
                )
-            |> Enum.map(fn {v, w} -> {v, w, Map.get(input, w)} end)
-            |> Enum.map(fn {a, b, w} -> Graph.Edge.new(a, b, weight: w) end)
+            |> Stream.map(fn {v, w} -> {v, w, weight_for_point(input, w)} end)
+            |> Stream.map(fn {a, b, w} -> Graph.Edge.new(a, b, weight: w) end)
+            |> Enum.to_list
+
+    Enum.count(edges)
+    |> IO.inspect(label: "edges count")
 
     Graph.new()
     |> Graph.add_edges(edges)
   end
 
-  def neighbor_for_point(map, {x, y}) do
-
+  def neighbor_for_point(map, {x, y}, chunk_size) do
+    max = chunk_size * 5
     [{0, 1}, {0, -1}, {1, 0}, {-1, 0}]
     |> Enum.map(
          fn
            {dx, dy} -> {x + dx, y + dy}
          end
        )
-    |> Enum.filter(fn p -> Map.has_key?(map, p) end)
+    |> Enum.filter(fn {x, y} -> (x < max and y < max) and (x >= 0 and y >= 0) end)
   end
 
   def get_tiled_pos(tile_size, pos) do
@@ -101,11 +101,10 @@ defmodule Day15 do
     Map.has_key?(map, {ix, iy}) and (tx < 5 and ty < 5)
   end
 
-  def get_weight(map, point) do
+  def weight_for_point(map, point) do
     {{tx, ix}, {ty, iy}} = get_tiled_point(map, point)
     original = Map.get(map, {ix, iy})
-    original + tx + ix
+    new = original + tx + ty
+    if new > 9, do: rem(new, 10) + 1, else: new
   end
-
-  def weight_for_point(map, from, point), do: get_weight(map, point)
 end

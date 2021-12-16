@@ -301,7 +301,7 @@ defmodule Utils do
     |> Enum.map(
          fn y ->
            x1..x2
-           |> Enum.map(getter)
+           |> Enum.map(fn x -> getter.(map, {x, y}) end)
            |> Enum.join("")
          end
        )
