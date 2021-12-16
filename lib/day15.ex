@@ -51,16 +51,22 @@ defmodule Day15 do
                  |> Enum.max
                  |> elem(0)
                  |> Kernel.+(1)
-                 |> IO.inspect
-    edges = input
-            |> Map.keys()
+    t = input
+        |> Map.keys()
+        |> Enum.flat_map(
+             fn {x, y} -> for dx <- 0..4, dy <- 0..4, do: {x + dx * chunk_size, y + dy * chunk_size} end
+           )
+
+    IO.inspect(Enum.count(t), label: "size")
+
+    edges = t
+            |> Stream.with_index
             |> Stream.flat_map(
-                 fn {x, y} -> for dx <- 0..4, dy <- 0..4, do: {x + dx * chunk_size, y + dy * chunk_size} end
-               )
-            |> Stream.flat_map(
-                 fn p ->
+                 fn {p, i} ->
+
+                   if rem(i, 100) == 0, do: IO.inspect(i)
                    Day15.neighbor_for_point(input, p, chunk_size)
-                   |> Enum.map(&{p, &1})
+                   |> Enum.map(fn a -> {p, a} end)
                  end
                )
             |> Stream.map(fn {v, w} -> {v, w, weight_for_point(input, w)} end)

@@ -331,4 +331,48 @@ defmodule Utils do
   def transpose(m) do
     [Enum.map(m, &hd/1) | transpose(Enum.map(m, &tl/1))]
   end
+
+  def pmap(collection, func) do
+    collection
+    |> Enum.map(&(Task.async(fn -> func.(&1) end)))
+    |> Enum.map(&Task.await/1)
+  end
+end
+
+# POWER is like 2^2 which means 2*2. So if x^y. Then there y recursions of x * x.
+defmodule Math do
+  def pow(num, power) do
+    do_pow num, power, 1
+  end
+  defp do_pow(_num, 0, acc) do
+    acc
+  end
+  defp do_pow(num, power, acc) when power > 0 do
+    do_pow(num, power - 1, acc * num)
+  end
+end
+
+# Reverse the bitstring (binary 1s and 0s). And use this algorithm: http://www.wikihow.com/Convert-from-Binary-to-Decimal
+# It's all about converting to base 2.
+
+defmodule Convert do
+  def binary_to_integer(binary) do
+    list = for << b :: 1 <- binary>>, do: b
+    binary_list_to_integer(list)
+  end
+
+  def bitstring_size(bitstring) do
+    list = for << b :: 1 <- bitstring>>, do: b
+    Enum.count(list)
+  end
+
+  def binary_list_to_integer (list) do
+    do_binary_list_to_integer Enum.reverse(list), 0, 0
+  end
+  defp do_binary_list_to_integer([], _power, acc) do
+    acc
+  end
+  defp do_binary_list_to_integer([head | tail], power, acc) do
+    do_binary_list_to_integer tail, (power+1), (acc + (head*Math.pow(2, power)))
+  end
 end
