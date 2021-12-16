@@ -337,6 +337,8 @@ defmodule Utils do
     |> Enum.map(&(Task.async(fn -> func.(&1) end)))
     |> Enum.map(&Task.await/1)
   end
+
+  def inspect_colors, do: [number: :yellow, atom: :cyan, string: :green, boolean: :magenta, nil: :magenta]
 end
 
 # POWER is like 2^2 which means 2*2. So if x^y. Then there y recursions of x * x.
@@ -357,12 +359,12 @@ end
 
 defmodule Convert do
   def binary_to_integer(binary) do
-    list = for << b :: 1 <- binary>>, do: b
+    list = for <<b :: 1 <- binary>>, do: b
     binary_list_to_integer(list)
   end
 
   def bitstring_size(bitstring) do
-    list = for << b :: 1 <- bitstring>>, do: b
+    list = for <<b :: 1 <- bitstring>>, do: b
     Enum.count(list)
   end
 
@@ -373,6 +375,6 @@ defmodule Convert do
     acc
   end
   defp do_binary_list_to_integer([head | tail], power, acc) do
-    do_binary_list_to_integer tail, (power+1), (acc + (head*Math.pow(2, power)))
+    do_binary_list_to_integer tail, (power + 1), (acc + (head * Math.pow(2, power)))
   end
 end
