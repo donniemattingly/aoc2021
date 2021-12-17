@@ -28,7 +28,7 @@ defmodule Day16 do
   def parse_packet(p = <<v :: size(3), t :: size(3), 0 :: size(1), l :: size(15), rest :: bitstring>>) do
     packet_size = Convert.bitstring_size(p)
     rest_size = Convert.bitstring_size(rest)
-    {result, _remaining} = parse_fixed_len_packet(rest, [], l)
+    {result, remaining} = parse_fixed_len_packet(rest, [], l)
     if t == 7, do: IO.inspect([v: v, t: t, l: l, count: Enum.count(result)])
     {[version: v, id: t, size: Convert.bitstring_size(p) - rest_size, value: result], remaining}
   end
