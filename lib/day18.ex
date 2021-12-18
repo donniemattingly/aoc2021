@@ -1,4 +1,5 @@
 defmodule Day18 do
+  import Logger
   use Utils.DayBoilerplate, day: 18
 
   def sample_input do
@@ -162,7 +163,8 @@ defmodule Day18 do
      depths
      |> Enum.map(fn {k, d} -> {Map.get(map, k), d} end)
      |> Enum.map(fn {node, d} -> {[node.left, node.right], d} end)
-     |> IO.inspect(charlists: :as_lists)
+     |> inspect(charlists: :as_lists)
+     |> Logger.info()
 
     potential = depths
     |> Enum.filter(fn {_, d} -> d >= 4 end)
@@ -171,7 +173,8 @@ defmodule Day18 do
 
     Map.values(potential)
     |> Enum.map(fn node -> [node.left, node.right] end)
-    |> IO.inspect(charlists: :as_lists)
+    |> inspect(charlists: :as_lists)
+    |> Logger.info()
 
     id_to_explode = ordered
     |> Enum.map(&elem(&1, 1))
@@ -187,8 +190,8 @@ defmodule Day18 do
               |> Enum.chunk_every(2, 1)
               |> Enum.filter(&Enum.count(&1) == 2)
 
-    IO.inspect([node.left, node.right], label: "exploding", charlists: :as_lists)
-    IO.inspect(map |> render_snailfish_number, label: "in", charlists: :as_lists)
+    Logger.info(inspect([node.left, node.right], label: "exploding", charlists: :as_lists))
+    Logger.info(inspect(map |> render_snailfish_number, label: "in", charlists: :as_lists))
 
     right = case Enum.find(ordered, fn [{_, a, _}, {_, b, _}] -> a != b and a == node.id end) do
       nil ->
@@ -203,8 +206,8 @@ defmodule Day18 do
         Enum.at(x, 0)
     end
 
-#    IO.inspect([left: left, right: right])
-#    IO.inspect(node)
+#    Logger.info(inspect([left: left, right: right]))
+#    Logger.info(inspect(node))
     map = if right != nil do
       {val, id, side} = right
       Map.update(map, id, nil, &Map.update(&1, side, nil, fn a -> a + node.right end))
@@ -269,12 +272,12 @@ defmodule Day18 do
   end
 
   def reduce(map) do
-    IO.inspect(
+    inspect(
       map
       |> render_snailfish_number,
       charlists: :as_lists,
       label: "pre-reduce"
-    )
+    ) |> Logger.info
 
     res = cond do
       can_explode?(map) ->
@@ -288,12 +291,12 @@ defmodule Day18 do
       true -> map
     end
 
-    IO.inspect(
+    inspect(
       res
       |> render_snailfish_number,
       charlists: :as_lists,
       label: "reduce"
-    )
+    ) |> Logger.info
 
     res
   end
@@ -304,7 +307,7 @@ defmodule Day18 do
     parsed = [pa, pb]
              |> parse_snailfish_number
 
-#    IO.inspect(parsed, label: "parsed")
+#    Logger.info(inspect(parsed, label: "parsed"))
 
     res = parsed
           |> reduce
@@ -316,10 +319,10 @@ defmodule Day18 do
 #      label: "add"
 #    )
 
-    IO.puts("\n\nNEW")
-    IO.inspect(pa, label: "  ", charlists: :as_lists)
-    IO.inspect(pb, label: "+ ", charlists: :as_lists)
-    IO.inspect(render_snailfish_number(res), label: "= ", charlists: :as_lists)
+#    IO.puts("\n\nNEW")
+    Logger.info(inspect(pa, label: "  ", charlists: :as_lists))
+    Logger.info(inspect(pb, label: "+ ", charlists: :as_lists))
+    Logger.info(inspect(render_snailfish_number(res), label: "= ", charlists: :as_lists))
     res
   end
 end
