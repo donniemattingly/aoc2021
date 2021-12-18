@@ -17,6 +17,18 @@
       <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/matrex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/matrex/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
@@ -29,6 +41,10 @@
       <root url="file://$PROJECT_DIR$/deps/matrex/lib" />
       <root url="file://$PROJECT_DIR$/deps/matrex/priv" />
       <root url="file://$PROJECT_DIR$/deps/matrex/lib" />
+      <root url="file://$PROJECT_DIR$/deps/matrex/lib" />
+      <root url="file://$PROJECT_DIR$/deps/matrex/priv" />
+      <root url="file://$PROJECT_DIR$/deps/matrex/lib" />
+      <root url="file://$PROJECT_DIR$/deps/matrex/priv" />
       <root url="file://$PROJECT_DIR$/deps/matrex/lib" />
       <root url="file://$PROJECT_DIR$/deps/matrex/priv" />
     </SOURCES>

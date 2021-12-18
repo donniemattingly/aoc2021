@@ -103,6 +103,10 @@ defmodule Utils do
     |> Kernel./(sample)
   end
 
+  def random_string(length) do
+    :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
+  end
+
   @doc """
   Inspects a value, but only if a random value generate is greater than
   `threshold`

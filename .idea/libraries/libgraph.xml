@@ -13,9 +13,23 @@
       <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/libgraph/ebin" />
       <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/prod/lib/libgraph/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/libgraph/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/libgraph/lib" />
+      <root url="file://$PROJECT_DIR$/deps/libgraph/lib" />
       <root url="file://$PROJECT_DIR$/deps/libgraph/lib" />
       <root url="file://$PROJECT_DIR$/deps/libgraph/lib" />
       <root url="file://$PROJECT_DIR$/deps/libgraph/lib" />

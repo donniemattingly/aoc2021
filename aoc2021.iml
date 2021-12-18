@@ -47,6 +47,19 @@
       <excludeFolder url="file://$MODULE_DIR$/_build/prod/lib/elixir_make" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/nx" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/statistics" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/qex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/comb" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/flow" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/toml" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/matrex" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/combine" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/memoize" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/rustler" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/libgraph" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/gen_stage" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/statistics" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/color_utils" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/test/lib/elixir_make" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="earmark" level="project" />
