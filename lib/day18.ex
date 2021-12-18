@@ -3,10 +3,8 @@ defmodule Day18 do
 
   def sample_input do
     """
-    [1,1]
-    [2,2]
-    [3,3]
-    [4,4]
+    [[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]]
+    [2,9]
     """
   end
 
@@ -98,6 +96,27 @@ defmodule Day18 do
     end
   end
 
+  #  defp dfs1(:leaf, _), do: []
+  #  defp dfs1(%{value: val, left: :leaf, right: :leaf}, _), do: [val]
+  #  defp dfs1(tree_node, order) do
+  #    dfs(tree_node.left) ++ [tree_node.value] ++ dfs(tree_node.right)
+  #  end
+
+  def map_to_dfs_list(map) do
+    start = map
+            |> Map.values
+            |> Enum.find(fn x -> x.parent == nil end)
+
+    do_dfs(map, start.id, nil, nil)
+  end
+
+  def do_dfs(map, current_id, prev_id, side) when is_number(current_id), do: [{current_id, prev_id, side}]
+  def do_dfs(map, current_id, prev_id, side) do
+    node = Map.get(map, current_id)
+    do_dfs(map, node.left, current_id, :left) ++ do_dfs(map, node.right, current_id, :right)
+  end
+
+
   def add_to_first_regular_number_in_direction(map, id, direction, num) do
     node = Map.get(map, id)
     parent = Map.get(map, node.parent)
@@ -135,14 +154,77 @@ defmodule Day18 do
   end
 
   def get_exploding_pair(map) do
-    map
+    ordered = map_to_dfs_list(map)
+
+     depths = map
     |> Enum.map(fn {k, v} -> {k, Day18.get_depth(k, map)} end)
+
+     depths
+     |> Enum.map(fn {k, d} -> {Map.get(map, k), d} end)
+     |> Enum.map(fn {node, d} -> {[node.left, node.right], d} end)
+     |> IO.inspect(charlists: :as_lists)
+
+    potential = depths
     |> Enum.filter(fn {_, d} -> d >= 4 end)
-    |> Enum.map(fn {k, _} -> Map.get(map, k) end)
-    |> Enum.min_by(fn node -> node.index end)
+    |> Enum.map(fn {k, _} -> {k, Map.get(map, k)} end)
+    |> Map.new()
+
+    Map.values(potential)
+    |> Enum.map(fn node -> [node.left, node.right] end)
+    |> IO.inspect(charlists: :as_lists)
+
+    id_to_explode = ordered
+    |> Enum.map(&elem(&1, 1))
+    |> Enum.filter(fn id -> Map.has_key?(potential, id) end)
+    |> hd
+
+    Map.get(potential, id_to_explode)
   end
 
   def explode(map) do
+    node = get_exploding_pair(map)
+    ordered = map_to_dfs_list(map)
+              |> Enum.chunk_every(2, 1)
+              |> Enum.filter(&Enum.count(&1) == 2)
+
+    IO.inspect([node.left, node.right], label: "exploding", charlists: :as_lists)
+    IO.inspect(map |> render_snailfish_number, label: "in", charlists: :as_lists)
+
+    right = case Enum.find(ordered, fn [{_, a, _}, {_, b, _}] -> a != b and a == node.id end) do
+      nil ->
+        nil
+      x ->
+        Enum.at(x, 1)
+    end
+    left = case Enum.find(ordered, fn [{_, a, _}, {_, b, _}] -> a != b and b == node.id end) do
+      nil ->
+        nil
+      x ->
+        Enum.at(x, 0)
+    end
+
+#    IO.inspect([left: left, right: right])
+#    IO.inspect(node)
+    map = if right != nil do
+      {val, id, side} = right
+      Map.update(map, id, nil, &Map.update(&1, side, nil, fn a -> a + node.right end))
+    else
+      map
+    end
+
+    map = if left != nil do
+      {val, id, side} = left
+      Map.update(map, id, nil, &Map.update(&1, side, nil, fn a -> a + node.left end))
+    else
+      map
+    end
+
+    map
+    |> Map.delete(node.id)
+    |> replace_exploded_node(node.parent, node.id)
+  end
+
+  def explode2(map) do
     node = get_exploding_pair(map)
     map
     |> add_to_first_regular_number_in_direction(node.parent, :left, node.left)
@@ -196,12 +278,10 @@ defmodule Day18 do
 
     res = cond do
       can_explode?(map) ->
-        IO.puts("exploding")
         map
         |> explode
         |> reduce
       can_split?(map) ->
-        IO.puts("splitting")
         map
         |> split
         |> reduce
@@ -221,17 +301,25 @@ defmodule Day18 do
   def add(a, b) do
     pa = render_snailfish_number(a)
     pb = render_snailfish_number(b)
-    res = [pa, pb]
-          |> parse_snailfish_number
+    parsed = [pa, pb]
+             |> parse_snailfish_number
+
+#    IO.inspect(parsed, label: "parsed")
+
+    res = parsed
           |> reduce
 
-    IO.inspect(
-      res
-      |> render_snailfish_number,
-      charlists: :as_lists,
-      label: "add"
-    )
+#    IO.inspect(
+#      res
+#      |> render_snailfish_number,
+#      charlists: :as_lists,
+#      label: "add"
+#    )
 
+    IO.puts("\n\nNEW")
+    IO.inspect(pa, label: "  ", charlists: :as_lists)
+    IO.inspect(pb, label: "+ ", charlists: :as_lists)
+    IO.inspect(render_snailfish_number(res), label: "= ", charlists: :as_lists)
     res
   end
 end
