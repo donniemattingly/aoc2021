@@ -33,7 +33,8 @@ defmodule Aoc2021.MixProject do
       {:color_utils, "0.2.0"},
       {:comb, git: "https://github.com/tallakt/comb.git"},
       {:remix, "~> 0.0.1", only: :dev},
-      {:rustler, "~> 0.21.1"}
+      {:rustler, "~> 0.21.1"},
+      {:nx, "~> 0.1.0-dev", github: "elixir-nx/nx", branch: "main", sparse: "nx"}
     ]
   end
 end

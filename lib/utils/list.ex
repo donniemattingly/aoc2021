@@ -47,4 +47,12 @@ defmodule Utils.List do
   defp cartesian([h | tail], elems) do
     Stream.flat_map(h, fn x -> cartesian(tail, [x | elems]) end)
   end
+
+  def cross([hd]), do: hd
+
+  def cross([hd | tail]) do
+    for a <- hd, b <- Enum.map(cross(tail), fn b -> a ++ b end) do
+      b
+    end
+  end
 end

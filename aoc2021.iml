@@ -96,5 +96,6 @@
     <orderEntry type="library" name="stream_data" level="project" />
     <orderEntry type="library" name="nx" level="project" />
     <orderEntry type="library" name="statistics" level="project" />
+    <orderEntry type="library" name="nx" level="project" />
   </component>
 </module>
