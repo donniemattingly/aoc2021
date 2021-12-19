@@ -4,8 +4,16 @@ defmodule Day18 do
 
   def sample_input do
     """
-    [[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]]
-    [2,9]
+    [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+    [[[5,[2,8]],4],[5,[[9,9],0]]]
+    [6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+    [[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+    [[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+    [[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+    [[[[5,4],[7,7]],8],[[8,3],8]]
+    [[9,3],[[9,9],[6,[4,9]]]]
+    [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+    [[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
     """
   end
 
@@ -24,6 +32,15 @@ defmodule Day18 do
   def solve([h | t]) do
     t
     |> Enum.reduce(h, fn x, acc -> add(acc, x) end)
+    |> magnitude
+  end
+
+  def solve2(options) do
+    Comb.combinations(options, 2)
+    |> Stream.flat_map(fn [a, b] -> [[a, b], [b, a]] end)
+    |> Stream.map(fn [a, b] -> add(a, b) |> magnitude end)
+    |> Enum.to_list
+    |> Enum.max
   end
 
   @doc"""
@@ -81,20 +98,28 @@ defmodule Day18 do
             |> Map.values
             |> Enum.find(fn x -> x.parent == nil end)
 
-    new = put_in(map[start.id][:highlighted], true)
-    IO.puts("#{label} #{do_print(new, start.id)}")
+    #    new = put_in(map[start.id][:highlighted], true)
+    IO.puts("#{label}#{do_print(map, start.id, false)}")
   end
 
-  def do_print(map, val) when is_number(val), do: val
-  def do_print(map, node_id) do
+  def do_print(map, node_id, highlight) when is_number(node_id) do
+    if highlight do
+      IO.ANSI.format([:blue, "#{node_id}"])
+    else
+      "#{node_id}"
+    end
+  end
+
+  def do_print(map, node_id, highlight) do
     node = Map.get(map, node_id)
-    str = "[#{do_print(map, node.left)}, #{do_print(map, node.right)}]"
-    if node[:highlighted] != nil do
+    str = "[#{do_print(map, node.left, node[:left_highlight])}, #{do_print(map, node.right, node[:right_highlight])}]"
+    if node[:highlighted] != nil or highlight do
       IO.ANSI.format([:blue, str])
     else
       str
     end
   end
+
 
   def render(map), do: render_snailfish_number(map)
   def render_snailfish_number(map) do
@@ -159,7 +184,8 @@ defmodule Day18 do
           |> Map.to_list
           |> Enum.map(
                fn
-                 {k, ^id} -> {k, 0}
+                 {k, ^id} ->
+                   {k, 0}
                  x -> x
                end
              )
@@ -184,9 +210,8 @@ defmodule Day18 do
 
     depths
     |> Enum.map(fn {k, d} -> {Map.get(map, k), d} end)
-    |> Enum.map(fn {node, d} -> {[node.left, node.right], d} end)
-    |> inspect(charlists: :as_lists)
-    |> Logger.info()
+    |> Enum.map(fn {node, d} -> {node.id, [node.left, node.right], d} end)
+    #    |> IO.inspect(charlists: :as_lists)
 
     potential = depths
                 |> Enum.filter(fn {_, d} -> d >= 4 end)
@@ -195,7 +220,7 @@ defmodule Day18 do
 
     Map.values(potential)
     |> Enum.map(fn node -> [node.left, node.right] end)
-    |> IO.inspect(charlists: :as_lists, label: "potential")
+    #    |> IO.inspect(charlists: :as_lists, label: "potential")
 
     id_to_explode = ordered
                     |> Enum.map(&elem(&1, 1))
@@ -205,15 +230,22 @@ defmodule Day18 do
     Map.get(potential, id_to_explode)
   end
 
+  def side_to_highlight(side) do
+    case side do
+      :left -> :left_highlight
+      :right -> :right_highlight
+    end
+  end
+
   def explode(map) do
     node = get_exploding_pair(map)
     ordered = map_to_dfs_list(map)
               |> Enum.chunk_every(2, 1)
               |> Enum.filter(&Enum.count(&1) == 2)
 
-    print(map, "tree: ")
-    IO.inspect([node.left, node.right], label: "exploding", charlists: :as_lists)
-    print(put_in(map[node.id][:highlighted], true), "explosion: ")
+    #    print(put_in(map[node.id][:highlighted], true), "explosion: ")
+
+#    IO.inspect([node.left, node.right], label: "explode", charlists: :as_lists)
 
     right = case Enum.find(ordered, fn [{_, a, _}, {_, b, _}] -> a != b and a == node.id end) do
       nil ->
@@ -228,23 +260,33 @@ defmodule Day18 do
         Enum.at(x, 0)
     end
 
-    map = if right != nil do
+
+    {map, dmap} = if right != nil do
       {val, id, side} = right
-      update_in(map[id][side], & &1 + node.right)
+      m = update_in(map[id][side], & &1 + node.right)
+      {m, put_in(m[id][side_to_highlight(side)], true)}
     else
-      map
+      {map, map}
     end
 
-    map = if left != nil do
+    {map, dmap} = if left != nil do
       {val, id, side} = left
-      update_in(map[id][side], & &1 + node.left)
+      m = update_in(map[id][side], & &1 + node.left)
+      dm = update_in(dmap[id][side], & &1 + node.left)
+      {m, put_in(dm[id][side_to_highlight(side)], true)}
     else
-      map
+      {map, dmap}
     end
 
-    map
-    |> Map.delete(node.id)
-    |> replace_exploded_node(node.parent, node.id)
+    #    print(dmap, "add")
+    #    print(put_in(map[node.id][:highlighted], true), "replacing with 0")
+
+    result = map
+             |> Map.delete(node.id)
+             |> replace_exploded_node(node.parent, node.id)
+
+#    print(result)
+    result
   end
 
   def explode2(map) do
@@ -263,8 +305,14 @@ defmodule Day18 do
   end
 
   def get_splitting_pair(map) do
+    dfs = map_to_dfs_list(map)
+          |> Stream.with_index
+          |> Enum.to_list
+          |> Enum.map(fn {{_, id, dir}, idx} -> {{id, dir}, idx} end)
+          |> Map.new
+
     get_splitting_pair(map, :left) ++ get_splitting_pair(map, :right)
-    |> Enum.min_by(fn {node, _} -> node.index end)
+    |> Enum.min_by(fn {node, dir} -> Map.get(dfs, {node.id, dir}) end)
   end
 
   def get_splitting_pair(map, direction) do
@@ -276,6 +324,7 @@ defmodule Day18 do
 
   def replace_splitting_number(map, {node, direction}) do
     num = node[direction]
+#    IO.inspect(num, label: "split")
     key = Utils.random_string(30)
     new_index = <<node.index :: 32, (if direction == :left, do: 0, else: 1) :: size(1)>>
                 |> Convert.binary_to_integer()
@@ -283,12 +332,14 @@ defmodule Day18 do
     transformed_node = Map.put(node, direction, key)
 
     result = map
-    |> Map.put(node.id, transformed_node)
-    |> Map.put(key, new_node)
+             |> Map.put(node.id, transformed_node)
+             |> Map.put(key, new_node)
 
-    IO.inspect([new_node.left, new_node.right], label: "inserting", charlists: :as_lists)
-    print(put_in(result[key][:highlight], true), "splitting")
+    #    print(map, "tree")
+    #    IO.inspect([new_node.left, new_node.right], label: "inserting", charlists: :as_lists)
+    #    print(put_in(result[key][:highlight], true), "splitting")
 
+#    print(result)
     result
   end
 
@@ -297,15 +348,12 @@ defmodule Day18 do
   end
 
   def reduce(map) do
-    IO.puts("\nReduce")
     res = cond do
       can_explode?(map) ->
-        IO.puts("Can Explode")
         map
         |> explode
         |> reduce
       can_split?(map) ->
-        IO.puts("Can Split")
         map
         |> split
         |> reduce
@@ -346,5 +394,19 @@ defmodule Day18 do
     Logger.info(inspect(pb, label: "+ ", charlists: :as_lists))
     Logger.info(inspect(render_snailfish_number(res), label: "= ", charlists: :as_lists))
     res
+  end
+
+  def magnitude(map) do
+    start = map
+            |> Map.values
+            |> Enum.find(fn x -> x.parent == nil end)
+
+    do_magnitude(map, start.id)
+  end
+
+  def do_magnitude(map, id) when is_number(id), do: id
+  def do_magnitude(map, id) do
+    node = Map.get(map, id)
+    3 * do_magnitude(map, node.left) + 2 * do_magnitude(map, node.right)
   end
 end
