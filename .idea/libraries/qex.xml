@@ -25,9 +25,19 @@
       <root url="file://$PROJECT_DIR$/_build/dev/lib/qex/ebin" />
       <root url="file://$PROJECT_DIR$/_build/prod/lib/qex/ebin" />
       <root url="file://$PROJECT_DIR$/_build/test/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/qex/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/qex/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/qex/lib" />
+      <root url="file://$PROJECT_DIR$/deps/qex/lib" />
       <root url="file://$PROJECT_DIR$/deps/qex/lib" />
       <root url="file://$PROJECT_DIR$/deps/qex/lib" />
       <root url="file://$PROJECT_DIR$/deps/qex/lib" />

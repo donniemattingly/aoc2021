@@ -16,18 +16,9 @@ defmodule Day17 do
     {x_range, y_range}
   end
 
-  def do_step({x, y, dx, dy}) do
-    {x + dx, y + dy, adjust_towards_zero(dx), dy - 1}
-  end
+  def do_step({x, y, dx, dy}), do: {x + dx, y + dy, adjust_towards_zero(dx), dy - 1}
 
-  def in_target(x_range, y_range, {x, y, _, _}) do
-    x in x_range and y in y_range
-  end
-
-  def moving_away_from_target(x_range, y_range, {x, y, dx, dy}) do
-    x_max = Enum.max(x_range)
-    y_max = Enum.mxa(y_range)
-  end
+  def in_target(x_range, y_range, {x, y, _, _}), do: x in x_range and y in y_range
 
   def adjust_towards_zero(0), do: 0
   def adjust_towards_zero(val) when val > 0, do: val - 1
@@ -54,15 +45,15 @@ defmodule Day17 do
     vs = for x <- 0..300, y <- -150..200, do: {x, y}
     vs
     |> Utils.pmap(fn v -> {v, test_velocity(v, {xr, yr})} end)
-    |> Enum.filter(& elem(&1, 1))
-    |> Enum.max_by(& elem(&1, 1))
+    |> Enum.filter(&elem(&1, 1))
+    |> Enum.max_by(&elem(&1, 1))
   end
 
   def solve2({xr, yr}) do
     vs = for x <- 0..300, y <- -200..200, do: {x, y}
     vs
     |> Utils.pmap(fn v -> {v, test_velocity(v, {xr, yr})} end)
-    |> Enum.filter(& elem(&1, 1))
+    |> Enum.filter(&elem(&1, 1))
     |> Enum.count
   end
 end

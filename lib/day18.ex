@@ -47,6 +47,7 @@ defmodule Day18 do
     Map.update(node, :index, 0, &Convert.binary_to_integer/1)
   end
 
+  def psn(num), do: parse_snailfish_number(num)
   def parse_snailfish_number(num) do
     do_parse_snailfish_number(num, Utils.random_string(30), nil, <<0 :: size(1)>>)
     |> Utils.List.flatten()
@@ -75,6 +76,27 @@ defmodule Day18 do
     ]
   end
 
+  def print(map, label \\ "") do
+    start = map
+            |> Map.values
+            |> Enum.find(fn x -> x.parent == nil end)
+
+    new = put_in(map[start.id][:highlighted], true)
+    IO.puts("#{label} #{do_print(new, start.id)}")
+  end
+
+  def do_print(map, val) when is_number(val), do: val
+  def do_print(map, node_id) do
+    node = Map.get(map, node_id)
+    str = "[#{do_print(map, node.left)}, #{do_print(map, node.right)}]"
+    if node[:highlighted] != nil do
+      IO.ANSI.format([:blue, str])
+    else
+      str
+    end
+  end
+
+  def render(map), do: render_snailfish_number(map)
   def render_snailfish_number(map) do
     start = map
             |> Map.values
@@ -157,29 +179,28 @@ defmodule Day18 do
   def get_exploding_pair(map) do
     ordered = map_to_dfs_list(map)
 
-     depths = map
-    |> Enum.map(fn {k, v} -> {k, Day18.get_depth(k, map)} end)
+    depths = map
+             |> Enum.map(fn {k, v} -> {k, Day18.get_depth(k, map)} end)
 
-     depths
-     |> Enum.map(fn {k, d} -> {Map.get(map, k), d} end)
-     |> Enum.map(fn {node, d} -> {[node.left, node.right], d} end)
-     |> inspect(charlists: :as_lists)
-     |> Logger.info()
-
-    potential = depths
-    |> Enum.filter(fn {_, d} -> d >= 4 end)
-    |> Enum.map(fn {k, _} -> {k, Map.get(map, k)} end)
-    |> Map.new()
-
-    Map.values(potential)
-    |> Enum.map(fn node -> [node.left, node.right] end)
+    depths
+    |> Enum.map(fn {k, d} -> {Map.get(map, k), d} end)
+    |> Enum.map(fn {node, d} -> {[node.left, node.right], d} end)
     |> inspect(charlists: :as_lists)
     |> Logger.info()
 
+    potential = depths
+                |> Enum.filter(fn {_, d} -> d >= 4 end)
+                |> Enum.map(fn {k, _} -> {k, Map.get(map, k)} end)
+                |> Map.new()
+
+    Map.values(potential)
+    |> Enum.map(fn node -> [node.left, node.right] end)
+    |> IO.inspect(charlists: :as_lists, label: "potential")
+
     id_to_explode = ordered
-    |> Enum.map(&elem(&1, 1))
-    |> Enum.filter(fn id -> Map.has_key?(potential, id) end)
-    |> hd
+                    |> Enum.map(&elem(&1, 1))
+                    |> Enum.filter(fn id -> Map.has_key?(potential, id) end)
+                    |> hd
 
     Map.get(potential, id_to_explode)
   end
@@ -190,8 +211,9 @@ defmodule Day18 do
               |> Enum.chunk_every(2, 1)
               |> Enum.filter(&Enum.count(&1) == 2)
 
-    Logger.info(inspect([node.left, node.right], label: "exploding", charlists: :as_lists))
-    Logger.info(inspect(map |> render_snailfish_number, label: "in", charlists: :as_lists))
+    print(map, "tree: ")
+    IO.inspect([node.left, node.right], label: "exploding", charlists: :as_lists)
+    print(put_in(map[node.id][:highlighted], true), "explosion: ")
 
     right = case Enum.find(ordered, fn [{_, a, _}, {_, b, _}] -> a != b and a == node.id end) do
       nil ->
@@ -206,18 +228,16 @@ defmodule Day18 do
         Enum.at(x, 0)
     end
 
-#    Logger.info(inspect([left: left, right: right]))
-#    Logger.info(inspect(node))
     map = if right != nil do
       {val, id, side} = right
-      Map.update(map, id, nil, &Map.update(&1, side, nil, fn a -> a + node.right end))
+      update_in(map[id][side], & &1 + node.right)
     else
       map
     end
 
     map = if left != nil do
       {val, id, side} = left
-      Map.update(map, id, nil, &Map.update(&1, side, nil, fn a -> a + node.left end))
+      update_in(map[id][side], & &1 + node.left)
     else
       map
     end
@@ -262,9 +282,14 @@ defmodule Day18 do
     new_node = %{id: key, parent: node.id, left: floor(num / 2), right: ceil(num / 2), index: new_index}
     transformed_node = Map.put(node, direction, key)
 
-    map
+    result = map
     |> Map.put(node.id, transformed_node)
     |> Map.put(key, new_node)
+
+    IO.inspect([new_node.left, new_node.right], label: "inserting", charlists: :as_lists)
+    print(put_in(result[key][:highlight], true), "splitting")
+
+    result
   end
 
   def split(map) do
@@ -272,19 +297,15 @@ defmodule Day18 do
   end
 
   def reduce(map) do
-    inspect(
-      map
-      |> render_snailfish_number,
-      charlists: :as_lists,
-      label: "pre-reduce"
-    ) |> Logger.info
-
+    IO.puts("\nReduce")
     res = cond do
       can_explode?(map) ->
+        IO.puts("Can Explode")
         map
         |> explode
         |> reduce
       can_split?(map) ->
+        IO.puts("Can Split")
         map
         |> split
         |> reduce
@@ -296,7 +317,8 @@ defmodule Day18 do
       |> render_snailfish_number,
       charlists: :as_lists,
       label: "reduce"
-    ) |> Logger.info
+    )
+    |> Logger.info
 
     res
   end
@@ -307,19 +329,19 @@ defmodule Day18 do
     parsed = [pa, pb]
              |> parse_snailfish_number
 
-#    Logger.info(inspect(parsed, label: "parsed"))
+    #    Logger.info(inspect(parsed, label: "parsed"))
 
     res = parsed
           |> reduce
 
-#    IO.inspect(
-#      res
-#      |> render_snailfish_number,
-#      charlists: :as_lists,
-#      label: "add"
-#    )
+    #    IO.inspect(
+    #      res
+    #      |> render_snailfish_number,
+    #      charlists: :as_lists,
+    #      label: "add"
+    #    )
 
-#    IO.puts("\n\nNEW")
+    #    IO.puts("\n\nNEW")
     Logger.info(inspect(pa, label: "  ", charlists: :as_lists))
     Logger.info(inspect(pb, label: "+ ", charlists: :as_lists))
     Logger.info(inspect(render_snailfish_number(res), label: "= ", charlists: :as_lists))

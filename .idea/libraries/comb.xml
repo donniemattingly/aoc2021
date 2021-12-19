@@ -23,9 +23,19 @@
       <root url="file://$PROJECT_DIR$/_build/dev/lib/comb/ebin" />
       <root url="file://$PROJECT_DIR$/_build/prod/lib/comb/ebin" />
       <root url="file://$PROJECT_DIR$/_build/test/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/comb/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/comb/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/comb/lib" />
+      <root url="file://$PROJECT_DIR$/deps/comb/lib" />
       <root url="file://$PROJECT_DIR$/deps/comb/lib" />
       <root url="file://$PROJECT_DIR$/deps/comb/lib" />
       <root url="file://$PROJECT_DIR$/deps/comb/lib" />

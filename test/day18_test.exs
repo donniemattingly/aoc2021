@@ -100,6 +100,16 @@ defmodule Day18Test do
     )
   end
 
+
+  test "dfs - 1" do
+    num = [[[[4, 0], [5, 4]], [[7, 7], [6, 0]]], [[8, [7, 7]], [[7, 9], [5, 0]]]]
+    map = Day18.psn(num)
+    dfs = Day18.map_to_dfs_list(map)
+    |> Enum.map(&elem(&1, 0))
+
+    assert dfs == Utils.List.flatten(num)
+  end
+
   test "add - 1 " do
     test_add(
       [[[[4, 3], 4], 4], [7, [[8, 4], 9]]],

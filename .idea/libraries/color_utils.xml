@@ -25,9 +25,19 @@
       <root url="file://$PROJECT_DIR$/_build/dev/lib/color_utils/ebin" />
       <root url="file://$PROJECT_DIR$/_build/prod/lib/color_utils/ebin" />
       <root url="file://$PROJECT_DIR$/_build/test/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/color_utils/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/test/lib/color_utils/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/color_utils/lib" />
+      <root url="file://$PROJECT_DIR$/deps/color_utils/lib" />
       <root url="file://$PROJECT_DIR$/deps/color_utils/lib" />
       <root url="file://$PROJECT_DIR$/deps/color_utils/lib" />
       <root url="file://$PROJECT_DIR$/deps/color_utils/lib" />
