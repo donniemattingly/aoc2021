@@ -191,12 +191,24 @@ defmodule Day19 do
     Comb.cartesian_product(rotations, inversions)
   end
 
+  def apply_rotation([x, y, z], rotation) do
+    rotation
+    |> Enum.map(
+         fn
+           0 -> x
+           1 -> y
+           2 -> z
+         end
+       )
+  end
+
   @doc"""
   I call these 'rotation' and 'inversion' but that's not really true.
 
   For each index in the rotation list, we select the correct value in the absolute frame
   Then we zip with the inversions and multiply
   """
+  def apply_transform(point, :identity), do: point
   def apply_transform([x, y, z], [rotation, inversion]) do
     rotation
     |> Enum.map(
@@ -208,6 +220,15 @@ defmodule Day19 do
        )
     |> Enum.zip(inversion)
     |> Enum.map(fn {val, inversion} -> val * inversion end)
+  end
+
+  def apply_transform_and_offset(p, :identity), do: p
+  def apply_transform_and_offset(p, %{offset: offset, transform: transform}) do
+    [rotation, inversion] = transform
+    p = apply_transform(p, transform)
+
+    Enum.zip(p, offset)
+    |> Enum.map(fn {a, b} -> a - b end)
   end
 
   def create_scan(beacons, pairs, scan_number) do
@@ -293,9 +314,9 @@ defmodule Day19 do
 
     overlaps1 = distances
                 |> Enum.map(&Map.get(m1, &1))
+                |> Enum.map(fn {a, b} -> {apply_transform(a, transform), apply_transform(b, transform)} end)
     overlaps2 = distances
                 |> Enum.map(&Map.get(m2, &1))
-                |> Enum.map(fn {a, b} -> {apply_transform(a, transform), apply_transform(b, transform)} end)
 
     set = Enum.zip(overlaps1, overlaps2)
           |> Enum.map(&calculate_offset/1)
@@ -373,6 +394,25 @@ defmodule Day19 do
     align_scan_cubes(scans_map)
   end
 
+  def get_alignment_map(scans) do
+    Comb.combinations(scans, 2)
+    |> Enum.flat_map(
+         fn [a, b] ->
+           transform = find_transform_and_offset(a, b)
+           [{a.scan, b.scan, transform}, {b.scan, a.scan, transform}]
+           #TODO this may be a bug /shrug
+         end
+       )
+    |> Enum.filter(fn {_, _, transform} -> transform != nil end)
+    |> Enum.map(fn {a, b, transform} -> {{a, b}, transform} end)
+    |> Map.new
+  end
+
+  def transforms_from_alignment(scans) do
+    alignment_map = get_alignment_map(scans)
+    [_ | paths] = get_paths(alignment_map, 0)
+    get_composite_transforms(alignment_map, paths)
+  end
 
   @doc"""
   At this point, we have a way to determine if a scan overlaps the other.
@@ -383,27 +423,101 @@ defmodule Day19 do
   """
   def align_scan_cubes(scans_map) do
     scans = Map.values(scans_map)
-    alignment_map = Comb.combinations(scans, 2)
-    |> Enum.map(fn [a, b] -> {a.scan, b.scan, find_transform_and_offset(a, b)} end)
-    |> Enum.filter(fn {_, _, transform} -> transform != nil end)
-    |> Enum.map(fn {a, b, transform} -> {{a, b}, transform} end)
+    transforms = transforms_from_alignment(scans)
+
+    scans
+    |> Enum.reduce(
+         MapSet.new,
+         fn scan, acc ->
+           scan.beacons
+           |> Enum.map(fn beacon -> apply_transform_and_offset(beacon, transforms[scan.scan]) end)
+           |> MapSet.new
+           |> MapSet.union(acc)
+         end
+       )
+  end
+
+  def get_paths(map, start) do
+    scans = Map.keys(map)
+            |> Enum.flat_map(&Tuple.to_list/1)
+            |> MapSet.new()
+
+    graph = Map.keys(map)
+            |> Enum.reduce(
+                 Graph.new(),
+                 fn {a, b}, g ->
+                   g
+                   |> Graph.add_edge(a, b)
+                   |> Graph.add_edge(b, a)
+                 end
+               )
+
+    scans
+    |> Enum.map(fn scan -> {scan, Graph.get_shortest_path(graph, 0, scan)} end)
+  end
+
+  def get_composite_transforms(alignment_map, paths) do
+    paths
+    |> Enum.map(fn {scan, path} -> {scan, get_composite_transform(alignment_map, path)} end)
     |> Map.new
-
-    generate_edges(alignment_map)
+    |> Map.put(0, :identity) # no transform for reference frame
   end
 
-  def generate_edges(alignment_map) do
-    Map.keys(alignment_map)
-    |> Enum.map(fn {a,b} -> {b, a} end)
-    |> Map.new()
+  def get_composite_transform(alignment_map, path) do
+    IO.inspect(path)
+    Enum.chunk_every(path, 2, 1, :discard)
+    |> Enum.map(&List.to_tuple/1)
+    |> Enum.flat_map(
+         &Map.get(
+           alignment_map,
+           &1
+           |> IO.inspect
+         )
+       )
+    |> reduce_transformations
   end
 
-  def get_path(edges, node) do
-    do_get_path(edges, [node])
+  def combine_transform([r1, i1], [[x, y, z], i2]) do
+    [
+      r1
+      |> Enum.map(
+           fn
+             0 -> x
+             1 -> y
+             2 -> z
+           end
+         ),
+      Enum.zip(i1, i2)
+      |> Enum.map(fn {a, b} -> a * b end)
+    ]
   end
 
-  def do_get_path(edges, path = [h | t]) when h == 0, do: path
-  def do_get_path(edges, path = [h | t]) do
-    do_get_path(edges, [Map.get(edges, h) | path])
+  def reduce_transformations([h | t]) do
+    Enum.reduce(
+      t,
+      h,
+      fn %{offset: o2, transform: t2}, %{offset: o1, transform: t1} ->
+        %{
+          offset: Enum.zip(o1, o2)
+                  |> Enum.map(fn {a, b} -> a + b end),
+          transform: combine_transform(t1, t2)
+        }
+      end
+    )
+  end
+
+  @doc"""
+  okay. I have a map like
+  %{0 => [4, 1], 1 => [4, 3, 2], 2 => [4], 3 => [4]}
+
+  Given a start, (0) I want to find all paths.
+  """
+  def get(map, path, node) do
+    case Map.get(map, node) do
+      nil ->
+        List.to_tuple(path)
+      neighbors ->
+        Enum.map(neighbors, fn x -> get(map, [x | path], x) end)
+    end
   end
 end
