@@ -165,7 +165,18 @@ defmodule Day19 do
   end
 
   def distance(p1, p2) do
-    euclidean_distance(p1, p2)
+    {euclidean_distance(p1, p2), manhattan(p1, p2)}
+  end
+
+  def manhattan(p1, p2) do
+    Enum.zip(p2, p1)
+    |> Enum.map(fn {a, b} -> abs(a - b) end)
+    |> Enum.sum
+  end
+
+  def min_max(p1, p2) do
+    Enum.zip(p2, p1)
+    |> Enum.map(fn {a, b} -> abs(a - b) end)
   end
 
   def euclidean_distance(p1, p2) do
@@ -173,8 +184,6 @@ defmodule Day19 do
     |> Enum.map(fn {a, b} -> a - b end)
     |> Enum.map(&:math.pow(&1, 2))
     |> Enum.sum()
-    |> :math.sqrt()
-    |> Float.round(3)
   end
 
   @doc"""
@@ -259,7 +268,7 @@ defmodule Day19 do
   we make a map of distances to pair for each scan, then do a set intersection of each maps keys
 
   I had a bug here where I just made two sets from the combined distances, where I should be taking
-  a union (i.e. in both scans)
+  an intersection (i.e. in both scans)
   """
   def get_overlapping_points(scan1, scan2) do
     get_distance = fn {_, _, d} -> d end
@@ -267,6 +276,28 @@ defmodule Day19 do
     s2 = MapSet.new(Enum.map(scan2.pairs, get_distance))
 
     overlap = MapSet.intersection(s1, s2)
+  end
+
+  def get_beacons_given_overlap_pairs(overlap, scan) do
+    scan.pairs
+    |> Enum.filter(fn {_, _, dist} -> MapSet.member?(overlap, dist) end)
+    |> Enum.flat_map(fn {p1, p2, _} -> [p1, p2] end)
+    |> Enum.uniq
+  end
+
+  def debug_get_overlapping_points(scan1, scan2) do
+    get_distance = fn {_, _, d} -> d end
+    s1 = MapSet.new(Enum.map(scan1.pairs, get_distance))
+    s2 = MapSet.new(Enum.map(scan2.pairs, get_distance))
+
+    overlap = MapSet.intersection(s1, s2)
+              |> IO.inspect
+
+    m1 = get_beacons_given_overlap_pairs(overlap, scan1)
+         |> IO.inspect
+    m2 = get_beacons_given_overlap_pairs(overlap, scan2)
+
+    Enum.zip(m1, m2)
   end
 
   def pairs_to_map_by_distance(pairs) do
@@ -369,38 +400,13 @@ defmodule Day19 do
     Enum.count(get_overlapping_points(scan1, scan2)) >= 12
   end
 
-  @doc"""
-  for each scan, get all the pairs and the data conserved in coordinate transform
-    to start, just doing distance. These are linear transforms so we can do more I guess
-
-  starting with the first scan and the second, find all pairs that share conserved data
-
-  given those list of points that share data, attempt all possible coordinate transforms, find the one
-  that works for all pairs with matching conserved data.
-
-  For a given combination of scans, once we find the transform. A transform is a linear transformation represented
-  by the [turn, flip] lists like we generated earlier. if we have, for example scan4 -> scan8 already solved
-  and we find scan0 (absolute) -> scan8, we can then compute scan4 in absolute terms
-
-  Once we have each scan specified in absolute terms, we have specified the entire set of beacons and can deduplicate.
-
-  we transform all points in each scan and
-  add them to a set. Once we have processed each combination that set should have the complete list of
-  unique beacons
-  """
-  def solve(input) do
-    scans = input_to_scans(input)
-    scans_map = for scan <- scans, into: %{}, do: {scan.scan, scan}
-    align_scan_cubes(scans_map)
-  end
-
   def get_alignment_map(scans) do
     Comb.combinations(scans, 2)
     |> Enum.flat_map(
          fn [a, b] ->
            transform = find_transform_and_offset(a, b)
-           [{a.scan, b.scan, transform}, {b.scan, a.scan, transform}]
-           #TODO this may be a bug /shrug
+           #           [{a.scan, b.scan, transform}, {b.scan, a.scan, transform}] #TODO this may be a bug /shrug
+           [{a.scan, b.scan, transform}]
          end
        )
     |> Enum.filter(fn {_, _, transform} -> transform != nil end)
@@ -519,5 +525,31 @@ defmodule Day19 do
       neighbors ->
         Enum.map(neighbors, fn x -> get(map, [x | path], x) end)
     end
+  end
+
+
+  @doc"""
+  for each scan, get all the pairs and the data conserved in coordinate transform
+    to start, just doing distance. These are linear transforms so we can do more I guess
+
+  starting with the first scan and the second, find all pairs that share conserved data
+
+  given those list of points that share data, attempt all possible coordinate transforms, find the one
+  that works for all pairs with matching conserved data.
+
+  For a given combination of scans, once we find the transform. A transform is a linear transformation represented
+  by the [turn, flip] lists like we generated earlier. if we have, for example scan4 -> scan8 already solved
+  and we find scan0 (absolute) -> scan8, we can then compute scan4 in absolute terms
+
+  Once we have each scan specified in absolute terms, we have specified the entire set of beacons and can deduplicate.
+
+  we transform all points in each scan and
+  add them to a set. Once we have processed each combination that set should have the complete list of
+  unique beacons
+  """
+  def solve(input) do
+    scans = input_to_scans(input)
+    scans_map = for scan <- scans, into: %{}, do: {scan.scan, scan}
+    align_scan_cubes(scans_map)
   end
 end
